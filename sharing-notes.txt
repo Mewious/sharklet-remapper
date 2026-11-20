@@ -1,0 +1,33 @@
+Sharklet (Tailwind flight hardware)
+
+For 64-bit Windows 10 version 1809 or newer, or Windows 11.
+This package does not run on macOS or Linux.
+
+1. Extract the ZIP, then run the Sharklet-Setup executable.
+2. Follow setup. If offered, complete the ViGEmBus driver wizard on the final
+   page. Installing the driver requires Windows administrator approval.
+   Restart Windows if the driver requests it.
+3. Connect your flight controllers and open Sharklet from Start.
+4. Click Refresh devices, learn and calibrate your inputs, save your profile,
+   and start Xbox output. Keep the app open while playing.
+
+The app, .NET runtime and driver installer are included. You do not need the
+source project, development tools or a separate .NET installation. The package
+contains no personal controller mappings; each person sets up their own inputs.
+See Getting started in the Start menu and README.md in the installation folder
+for the full control mappings and Tailwind setup instructions.
+
+WINCTRL MCDU-32 support needs the updated Tailwind client and a local SimAppPro
+installation for its .wwf font. Font files are not included in this package.
+Close SimAppPro / SimLogic before enabling Tailwind's USB screen output.
+
+This installs the hardware remapper. It does not include Roblox or the Tailwind
+game. ViGEmBus is retired and no longer maintained.
+
+Unsigned builds may show an unknown-publisher warning. Signed builds show a
+verified publisher, but new releases can still trigger a SmartScreen warning.
+The bundled driver installer retains its publisher's signature. The .sha256
+file records the Tailwind installer's checksum.
+
+You can send this entire ZIP to other Windows users. Their saved profiles stay
+on their own PCs and are preserved during upgrades and uninstall.

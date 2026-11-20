@@ -1,0 +1,5 @@
+{
+  "Endpoint": "<account endpoint from Azure>",
+  "CodeSigningAccountName": "<your Artifact Signing account name>",
+  "CertificateProfileName": "<your Public Trust certificate profile name>"
+}

@@ -1,0 +1,26 @@
+Sharklet (Tailwind flight hardware)
+
+This installs the controller remapper for your Windows account, including the
+.NET runtime. Connect your stick, throttle and pedals before opening the app.
+
+Xbox output needs the ViGEmBus driver. If it is missing, the final page offers
+to open the bundled publisher's setup wizard. Approve the Windows administrator
+prompt and complete that wizard. Restart Windows if the driver requests it.
+ViGEmBus is retired and no longer maintained. Hardware detection and calibration
+work without it. You can also use Official driver download inside the app later.
+
+In the app, refresh devices, learn each input, calibrate its range, save your
+profile, and start Xbox output. Keep the app open while playing. See README.md
+in the installation folder for the full mapping and Roblox setup instructions.
+
+For a WINCTRL MCDU-32, open WINCTRL MCDU in the app. Close SimAppPro and
+SimLogic, select the captain or first-officer unit, then start the MCDU bridge.
+The screen uses Roblox's local logs and a font from your own SimAppPro install.
+The screen needs no ViGEmBus driver; MCDU button input does. See the MCDU section
+in README.md for setup and the five-second screen test.
+
+Upgrades and uninstall preserve your saved profile at:
+%LOCALAPPDATA%\TailwindRemapper\profile.json
+
+Uninstall Sharklet through Windows Settings > Apps. The shared
+ViGEmBus driver remains installed because other controller apps may use it.
