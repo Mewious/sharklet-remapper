@@ -30,3 +30,9 @@ dotnet build -c Release
 ```
 
 To build the installer, install Inno Setup 6 and run `build-installer.ps1`.
+
+To publish a new release on GitHub (needs the `gh` CLI):
+
+```powershell
+.\release.ps1 1.2.1 "What changed"
+```
