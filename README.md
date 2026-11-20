@@ -1,3 +1,5 @@
+<p align="center"><img src="sharklet.png" width="160" alt="Sharklet icon"></p>
+
 # Sharklet
 
 Use your joystick, throttle and pedals in Tailwind.
