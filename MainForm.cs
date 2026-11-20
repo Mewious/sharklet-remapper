@@ -50,7 +50,7 @@ public sealed class MainForm : Form
         updateButton.Click += async (_, _) => await InstallUpdate();
         updateBanner.Controls.Add(updateButton);
         AddButton(updateBanner, "Later", () => updateBanner.Visible = false);
-        layout.Controls.Add(updateBanner);
+        layout.Controls.Add(updateBanner, 0, 0);
         var header = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 0, 12) };
         header.Controls.Add(new PictureBox { Image = Icon == null ? null : new Icon(Icon, 64, 64).ToBitmap(), Size = new Size(56, 56), SizeMode = PictureBoxSizeMode.Zoom, Margin = new Padding(0, 0, 10, 0) });
         var titles = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, WrapContents = false, Margin = new Padding(0) };
@@ -58,8 +58,8 @@ public sealed class MainForm : Form
         titles.Controls.Add(new Panel { BackColor = Theme.Accent, Size = new Size(54, 3), Margin = new Padding(3, 0, 0, 4) });
         titles.Controls.Add(new Label { Text = "Flight hardware → Xbox controller", ForeColor = Theme.MutedText, AutoSize = true, Margin = new Padding(2, 0, 0, 0) });
         header.Controls.Add(titles);
-        layout.Controls.Add(header);
-        layout.Controls.Add(editButtons);
+        layout.Controls.Add(header, 0, 1);
+        layout.Controls.Add(editButtons, 0, 2);
         AddButton(editButtons, "Refresh devices", RefreshDevices);
         AddButton(editButtons, "Learn selected input", BeginLearn);
         AddButton(editButtons, "Clear binding", () => { CancelLearn(); grid.CurrentRow?.Cells["Source"].SetValue(""); });
@@ -73,12 +73,12 @@ public sealed class MainForm : Form
         SetupGrid();
         var card = new CardPanel { Dock = DockStyle.Fill, Margin = new Padding(0, 4, 0, 0) };
         card.Controls.Add(grid);
-        layout.Controls.Add(card);
+        layout.Controls.Add(card, 0, 3);
         layout.Controls.Add(new Label
         {
             AutoSize = true, MaximumSize = new Size(1120, 0), Margin = new Padding(0, 10, 0, 10), ForeColor = Theme.MutedText,
             Text = "Capture the lowest raw value at Min, neutral at Center, and highest at Max. Use Invert to reverse an axis or switch. LT / RT, brakes, flaps and spoilers use Min and Max only. Flaps: 0 retracted, 1 FULL. Spoilers: 0 retracted, 1 full. Switches: 1 on/armed."
-        });
+        }, 0, 4);
         var outputButtons = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
         start.Click += (_, _) => Guard(ToggleOutput);
         outputButtons.Controls.Add(start);
@@ -96,12 +96,12 @@ public sealed class MainForm : Form
             MessageBox.Show(this, "Xbox output requires ViGEmBus. This driver is retired and receives no updates. Use only the publisher's GitHub release. Install it yourself, restart Windows if requested, then start output. The app never installs drivers automatically.", "ViGEmBus", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Process.Start(new ProcessStartInfo("https://github.com/nefarius/ViGEmBus/releases/tag/v1.22.0") { UseShellExecute = true });
         });
-        layout.Controls.Add(outputButtons);
+        layout.Controls.Add(outputButtons, 0, 5);
         var footer = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 0) };
         footer.Controls.Add(status);
         footer.Controls.Add(monitor);
         footer.Controls.Add(volantaStatus);
-        layout.Controls.Add(footer);
+        layout.Controls.Add(footer, 0, 6);
         Theme.Apply(this);
         Shown += (_, _) => Guard(() =>
         {
