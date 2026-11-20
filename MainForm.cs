@@ -13,6 +13,9 @@ public sealed class MainForm : Form
     private readonly Label volantaStatus = new() { AutoSize = true, MaximumSize = new Size(1120, 0), ForeColor = Theme.MutedText, Text = "Volanta tracking is off." };
     private readonly SharkletButton volanta = new() { Text = "Connect Volanta", Primary = true };
     private readonly VolantaBridge volantaBridge = new();
+    private readonly FlowLayoutPanel updateBanner = new() { AutoSize = true, WrapContents = false, Visible = false, BackColor = Theme.Selection, Padding = new Padding(10, 8, 2, 0), Margin = new Padding(0, 0, 0, 12) };
+    private readonly Label updateText = new() { AutoSize = true, Margin = new Padding(0, 6, 12, 0) };
+    private readonly SharkletButton updateButton = new() { Text = "Update now", Primary = true };
     private readonly SharkletButton start = new() { Text = "Start Xbox output", Primary = true };
     private readonly FlowLayoutPanel editButtons = new() { AutoSize = true, Dock = DockStyle.Fill };
     private readonly string profilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TailwindRemapper", "profile.json");
@@ -34,7 +37,8 @@ public sealed class MainForm : Form
         MinimumSize = new Size(1040, 700);
         Size = new Size(1250, 850);
         StartPosition = FormStartPosition.CenterScreen;
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18), ColumnCount = 1, RowCount = 6 };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18), ColumnCount = 1, RowCount = 7 };
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
@@ -42,6 +46,11 @@ public sealed class MainForm : Form
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         Controls.Add(layout);
+        updateBanner.Controls.Add(updateText);
+        updateButton.Click += async (_, _) => await InstallUpdate();
+        updateBanner.Controls.Add(updateButton);
+        AddButton(updateBanner, "Later", () => updateBanner.Visible = false);
+        layout.Controls.Add(updateBanner);
         var header = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 0, 12) };
         header.Controls.Add(new PictureBox { Image = Icon == null ? null : new Icon(Icon, 64, 64).ToBitmap(), Size = new Size(56, 56), SizeMode = PictureBoxSizeMode.Zoom, Margin = new Padding(0, 0, 10, 0) });
         var titles = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, WrapContents = false, Margin = new Padding(0) };
@@ -60,6 +69,7 @@ public sealed class MainForm : Form
         AddButton(editButtons, "Save profile", () => { ReadGrid().Write(profilePath); SetStatus("Profile saved. It will load next time."); });
         AddButton(editButtons, "Import…", ImportProfile);
         AddButton(editButtons, "Export…", ExportProfile);
+        AddButton(editButtons, "Share profile", ShareProfile);
         SetupGrid();
         var card = new CardPanel { Dock = DockStyle.Fill, Margin = new Padding(0, 4, 0, 0) };
         card.Controls.Add(grid);
@@ -102,6 +112,7 @@ public sealed class MainForm : Form
             }
             RefreshDevices();
             timer.Start();
+            _ = CheckForUpdate();
         });
         timer.Tick += (_, _) => Tick();
         volantaBridge.StatusChanged += text => volantaStatus.Text = text;
@@ -122,6 +133,33 @@ public sealed class MainForm : Form
     }
 
     private void SetStatus(string text) => status.Text = text;
+
+    private async Task CheckForUpdate()
+    {
+        var update = await UpdateChecker.Check();
+        if (update == null || IsDisposed) return;
+        updateButton.Tag = update;
+        updateText.Text = $"Sharklet {update.Version} is out. You have {UpdateChecker.CurrentVersion}.";
+        updateBanner.Visible = true;
+    }
+
+    private async Task InstallUpdate()
+    {
+        if (updateButton.Tag is not UpdateInfo update) return;
+        updateButton.Enabled = false;
+        updateText.Text = $"Downloading Sharklet {update.Version}…";
+        try
+        {
+            await UpdateChecker.Install(update);
+            Close();
+        }
+        catch (Exception ex)
+        {
+            updateText.Text = "The update didn't download.";
+            updateButton.Enabled = true;
+            MessageBox.Show(this, ex.Message, "Sharklet update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
 
     private void ToggleVolanta()
     {
@@ -402,6 +440,16 @@ public sealed class MainForm : Form
         profile = imported;
         FillGrid();
         SetStatus("Profile imported. Save it to use it next time.");
+    }
+
+    // Puts the profile on the clipboard as a file, so it pastes straight into Discord or an email.
+    private void ShareProfile()
+    {
+        var path = Path.Combine(Path.GetDirectoryName(profilePath)!, "Share", "Sharklet profile.json");
+        ReadGrid().Write(path);
+        var files = new System.Collections.Specialized.StringCollection { path };
+        Clipboard.SetFileDropList(files);
+        SetStatus("Profile copied. Paste it (Ctrl+V) into Discord or anywhere you can send a file. They load it with Import…");
     }
 
     private void ExportProfile()
