@@ -12,7 +12,9 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 Set-Location $PSScriptRoot
 
+# git and gh print progress to stderr, which Windows PowerShell would treat as an error; trust the exit code instead.
 function Run([string]$what, [scriptblock]$command) {
+    $ErrorActionPreference = 'Continue'
     & $command
     if ($LASTEXITCODE -ne 0) { throw "$what failed." }
 }
